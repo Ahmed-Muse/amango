@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Amango{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-display: 'Lexend', var(--font-sans);
+
+            --ink-900: #0b1524;
+            --ink-700: #33415c;
+            --ink-500: #66748c;
+            --ink-300: #c6cedb;
+            --surface: #ffffff;
+            --surface-muted: #f6f8fb;
+            --border-subtle: #e7eaf1;
+
+            --blue-900: #071a35;
+            --blue-800: #0d2c58;
+            --blue-700: #123f7d;
+            --blue-600: #1a56b0;
+            --blue-500: #3672cf;
+            --blue-100: #e9f1fd;
+
+            --green-700: #0e7a5b;
+            --green-600: #14a97d;
+            --green-500: #23c393;
+            --green-100: #e2f8ef;
+
+            --shadow-xs: 0 1px 2px rgba(11, 21, 36, 0.05);
+            --shadow-sm: 0 2px 10px rgba(11, 21, 36, 0.06);
+            --shadow-md: 0 10px 28px rgba(11, 21, 36, 0.09);
+            --shadow-lg: 0 22px 48px rgba(11, 21, 36, 0.14);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+
+            --sidebar-w: 214px;
+            --sidebar-w-collapsed: 72px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--surface-muted);
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            font-family: var(--font-sans);
+            color: var(--ink-900);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, .brand-font { font-family: var(--font-display); }
+
+        /* ================= Sidebar ================= */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            background: linear-gradient(195deg, var(--blue-900) 0%, var(--blue-700) 100%);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: visible;
+            transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        body.sidebar-collapsed .sidebar {
+            width: var(--sidebar-w-collapsed);
+        }
+
+        .sidebar-inner {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 1.1rem 1rem;
+            color: #fff !important;
+            text-decoration: none !important;
+            white-space: nowrap;
+            min-height: 64px;
+        }
+
+        .sidebar-brand:hover .brand-word { opacity: 0.85; }
+
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--green-500), var(--blue-500));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        }
+
+        .brand-word {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.02rem;
+            letter-spacing: 0.01em;
+            color: #fff;
+            transition: opacity 0.15s ease;
+        }
+
+        body.sidebar-collapsed .brand-word { display: none; }
+
+        .sidebar-section-label {
+            padding: 0.4rem 1.1rem 0.35rem;
+            font-size: 0.66rem;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: rgba(255, 255, 255, 0.38);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        body.sidebar-collapsed .sidebar-section-label { visibility: hidden; }
+
+        .sidebar-nav {
+            list-style: none;
+            margin: 0.15rem 0.6rem;
+            padding: 0;
+            flex: 1;
+        }
+
+        .sidebar-nav li + li { margin-top: 0.15rem; }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.5rem 0.6rem;
+            color: rgba(255, 255, 255, 0.68) !important;
+            text-decoration: none !important;
+            white-space: nowrap;
+            font-size: 0.845rem;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .sidebar-nav a .nav-ico {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.06);
+            transition: background-color 0.15s ease;
+        }
+
+        .sidebar-nav a:hover { color: #fff !important; }
+        .sidebar-nav a:hover .nav-ico { background: rgba(255, 255, 255, 0.12); }
+
+        .sidebar-nav a.active {
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .sidebar-nav a.active .nav-ico {
+            background: linear-gradient(135deg, var(--green-500), var(--green-600));
+            box-shadow: 0 3px 8px rgba(20, 169, 125, 0.4);
+        }
+
+        body.sidebar-collapsed .sidebar-nav a { justify-content: center; padding: 0.5rem; }
+        body.sidebar-collapsed .sidebar-nav a span.nav-label { display: none; }
+
+        .sidebar-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 1.1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.09);
+            white-space: nowrap;
+        }
+
+        .sidebar-footer .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green-500);
+            box-shadow: 0 0 0 3px rgba(35, 195, 147, 0.25);
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer-text {
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.2;
+        }
+
+        .sidebar-footer-text strong { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+
+        body.sidebar-collapsed .sidebar-footer-text { display: none; }
+
+        /* Floating collapse toggle, anchored to the sidebar edge */
+        .sidebar-toggle {
+            position: absolute;
+            top: 22px;
+            right: -13px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blue-600);
+            cursor: pointer;
+            z-index: 101;
+            transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
+        }
+
+        .sidebar-toggle:hover {
+            box-shadow: var(--shadow-md);
+            color: var(--green-600);
+        }
+
+        .sidebar-toggle i { font-size: 0.8rem; transition: transform 0.22s ease; }
+
+        body.sidebar-collapsed .sidebar-toggle i { transform: rotate(180deg); }
+
+        /* ================= Topbar + main ================= */
+        .main-wrapper {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: saturate(180%) blur(10px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 1.5rem;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .topbar-crumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.86rem;
+            color: var(--ink-500);
+        }
+
+        .topbar-crumb .crumb-current {
+            color: var(--ink-900);
+            font-weight: 600;
+        }
+
+        .topbar-crumb i.bi-chevron-right { font-size: 0.65rem; color: var(--ink-300); }
+
+        .topbar-crumb .crumb-icon {
+            color: var(--blue-600);
+            font-size: 1rem;
+        }
+
+        .content-area {
+            padding: 1.75rem 2rem 3rem;
+            max-width: 1180px;
+            width: 100%;
+        }
+
+        /* ================= Shared components ================= */
+        .content-area a { color: var(--blue-600); }
+        .content-area a:hover { color: var(--blue-800); }
+
+        .surface-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .card {
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn {
+            font-weight: 600;
+            font-size: 0.86rem;
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 1rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
+            border: none;
+            box-shadow: 0 4px 12px rgba(26, 86, 176, 0.28);
+        }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
+            box-shadow: 0 6px 16px rgba(26, 86, 176, 0.36);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-primary {
+            color: var(--blue-600);
+            border: 1.5px solid var(--blue-100);
+            background: var(--blue-100);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--blue-600);
+            border-color: var(--blue-600);
+            color: #fff;
+        }
+
+        .btn-outline-secondary {
+            color: var(--ink-700);
+            border: 1.5px solid var(--border-subtle);
+            background: var(--surface);
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--surface-muted);
+            border-color: var(--ink-300);
+            color: var(--ink-900);
+        }
+
+        .btn-outline-danger {
+            border: 1.5px solid #fbdadb;
+            background: #fff5f5;
+        }
+
+        .btn-outline-danger:hover { transform: translateY(-1px); }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #b02a37);
+            border: none;
+        }
+
+        .btn-light { background: var(--surface-muted); border: 1.5px solid var(--border-subtle); font-weight: 500; }
+
+        .text-accent { color: var(--green-600) !important; }
+
+        .badge-accent {
+            background: var(--green-100);
+            color: var(--green-700);
+            font-weight: 600;
+            font-size: 0.74rem;
+            padding: 0.35em 0.7em;
+            border-radius: 999px;
+            letter-spacing: 0.01em;
+        }
+
+        .alert {
+            border-radius: var(--radius-md);
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background-color: var(--green-100);
+            border-color: #b9ecda;
+            color: var(--green-700);
+        }
+
+        .alert-danger { background-color: #fdecec; border-color: #f7c6c8; color: #9a2530; }
+
+        .page-item.active .page-link {
+            background: var(--blue-600);
+            border-color: var(--blue-600);
+        }
+
+        .page-link {
+            color: var(--blue-600);
+            border-radius: var(--radius-sm);
+            margin: 0 2px;
+            border-color: var(--border-subtle);
+        }
+
+        .section-icon { color: var(--blue-600); }
+
+        .form-control, .form-select {
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border-subtle);
+            padding: 0.55rem 0.85rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px var(--blue-100);
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--ink-700);
+            margin-bottom: 0.35rem;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="sidebar" aria-label="Main navigation">
+        <button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="Toggle sidebar">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <div class="sidebar-inner">
+            <a class="sidebar-brand" href="{% url 'mango:mangousers_list' %}">
+                <span class="brand-mark">A</span>
+                <span class="brand-word">Amango</span>
+            </a>
+
+            {% with url_name=request.resolver_match.url_name %}
+            <div class="sidebar-section-label">Workspace</div>
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="{% url 'mango:mangousers_list' %}"
+                       title="Mango Users"
+                       class="{% if url_name == 'mangousers_list' or url_name == 'mangousers_detail' or url_name == 'mangousers_update' or url_name == 'mangousers_delete' %}active{% endif %}">
+                        <span class="nav-ico"><i class="bi bi-people-fill"></i></span>
+                        <span class="nav-label">Mango Users</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'mango:mangousers_create' %}"
+                       title="Add User"
+                       class="{% if url_name == 'mangousers_create' %}active{% endif %}">
+                        <span class="nav-ico"><i class="bi bi-person-plus-fill"></i></span>
+                        <span class="nav-label">Add User</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/" title="Admin">
+                        <span class="nav-ico"><i class="bi bi-shield-lock-fill"></i></span>
+                        <span class="nav-label">Admin</span>
+                    </a>
+                </li>
+            </ul>
+            {% endwith %}
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                <span class="sidebar-footer-text"><strong>Amango</strong><br>v1.0 &middot; development</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-crumb">
+                <i class="bi bi-house crumb-icon"></i>
+                <span>Amango</span>
+                <i class="bi bi-chevron-right"></i>
+                <span class="crumb-current">{% block page_title %}Mango Users{% endblock %}</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            var body = document.body;
+            var toggle = document.getElementById('sidebarToggle');
+            var STORAGE_KEY = 'amango-sidebar-collapsed';
+
+            if (localStorage.getItem(STORAGE_KEY) === '1') {
+                body.classList.add('sidebar-collapsed');
+            }
+
+            toggle.addEventListener('click', function () {
+                body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem(STORAGE_KEY, body.classList.contains('sidebar-collapsed') ? '1' : '0');
+            });
+        })();
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+
+{% block title %}Mango Users{% endblock %}
+{% block page_title %}Mango Users{% endblock %}
+
+{% block extra_head %}
+<style>
+    .stat-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        padding: 1.1rem 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+    }
+
+    .stat-ico {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+    }
+
+    .stat-ico.is-blue { background: var(--blue-100); color: var(--blue-600); }
+    .stat-ico.is-green { background: var(--green-100); color: var(--green-700); }
+    .stat-ico.is-ink { background: var(--surface-muted); color: var(--ink-700); border: 1px solid var(--border-subtle); }
+
+    .stat-value {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.35rem;
+        color: var(--ink-900);
+        line-height: 1.1;
+    }
+
+    .stat-label {
+        font-size: 0.76rem;
+        color: var(--ink-500);
+        font-weight: 500;
+    }
+
+    .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        position: relative;
+        width: 280px;
+        max-width: 100%;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--ink-300);
+        font-size: 0.9rem;
+    }
+
+    .search-box input {
+        padding-left: 2.35rem;
+        background: var(--surface);
+    }
+
+    .users-table thead th {
+        text-transform: uppercase;
+        font-size: 0.68rem;
+        letter-spacing: 0.07em;
+        color: var(--ink-500);
+        font-weight: 700;
+        border-bottom: 1px solid var(--border-subtle);
+        padding: 0.9rem 1rem;
+        background: var(--surface-muted);
+    }
+
+    .users-table td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        vertical-align: middle;
+    }
+
+    .users-table tbody tr:last-child td { border-bottom: none; }
+
+    .users-table tbody tr {
+        transition: background-color 0.12s ease;
+    }
+
+    .users-table tbody tr:hover { background-color: var(--surface-muted); }
+
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .avatar-chip {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--blue-500), var(--green-500));
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        font-family: var(--font-display);
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--ink-900);
+        font-size: 0.9rem;
+        text-decoration: none !important;
+    }
+
+    .user-name:hover { color: var(--blue-700) !important; }
+
+    .user-id {
+        font-size: 0.72rem;
+        color: var(--ink-500);
+    }
+
+    .age-pill {
+        font-variant-numeric: tabular-nums;
+        color: var(--ink-700);
+        font-weight: 600;
+        font-size: 0.86rem;
+    }
+
+    .row-actions {
+        display: flex;
+        gap: 0.4rem;
+        justify-content: flex-end;
+    }
+
+    .icon-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid var(--border-subtle);
+        background: var(--surface);
+        color: var(--ink-700);
+        transition: all 0.15s ease;
+    }
+
+    .icon-btn:hover {
+        background: var(--blue-100);
+        border-color: var(--blue-100);
+        color: var(--blue-700);
+        transform: translateY(-1px);
+    }
+
+    .icon-btn.danger:hover {
+        background: #fdecec;
+        border-color: #fdecec;
+        color: #b02a37;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state .empty-ico {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: var(--blue-100);
+        color: var(--blue-600);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+        margin: 0 auto 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="stat-row">
+        <div class="surface-card stat-card">
+            <div class="stat-ico is-blue"><i class="bi bi-people-fill"></i></div>
+            <div>
+                <div class="stat-value">{{ total_users }}</div>
+                <div class="stat-label">Total users</div>
+            </div>
+        </div>
+        <div class="surface-card stat-card">
+            <div class="stat-ico is-green"><i class="bi bi-briefcase-fill"></i></div>
+            <div>
+                <div class="stat-value">{{ distinct_titles }}</div>
+                <div class="stat-label">Distinct titles</div>
+            </div>
+        </div>
+        <div class="surface-card stat-card">
+            <div class="stat-ico is-ink"><i class="bi bi-calendar-heart"></i></div>
+            <div>
+                <div class="stat-value">{% if average_age %}{{ average_age|floatformat:0 }}{% else %}—{% endif %}</div>
+                <div class="stat-label">Average age</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" id="userSearch" class="form-control" placeholder="Search users by name or title&hellip;">
+        </div>
+        <a href="{% url 'mango:mangousers_create' %}" class="btn btn-primary">
+            <i class="bi bi-person-plus-fill"></i> Add User
+        </a>
+    </div>
+
+    <div class="surface-card">
+        {% if mango_users %}
+            <div class="table-responsive">
+                <table class="table users-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Title</th>
+                            <th>Age</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        {% for mango_user in mango_users %}
+                            <tr data-search="{{ mango_user.name|lower }} {{ mango_user.title|lower }}">
+                                <td>
+                                    <a href="{% url 'mango:mangousers_detail' mango_user.pk %}" class="user-cell">
+                                        <span class="avatar-chip">{{ mango_user.name|slice:":1"|upper }}</span>
+                                        <span>
+                                            <span class="user-name d-block">{{ mango_user.name }}</span>
+                                            <span class="user-id">ID #{{ mango_user.pk }}</span>
+                                        </span>
+                                    </a>
+                                </td>
+                                <td><span class="badge-accent">{{ mango_user.title }}</span></td>
+                                <td><span class="age-pill">{{ mango_user.age|default:"—" }}</span></td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a href="{% url 'mango:mangousers_update' mango_user.pk %}" class="icon-btn" title="Edit {{ mango_user.name }}">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="{% url 'mango:mangousers_delete' mango_user.pk %}" class="icon-btn danger" title="Delete {{ mango_user.name }}">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p id="noResults" class="text-center text-muted py-4 mb-0 d-none">No users match your search.</p>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-ico"><i class="bi bi-people"></i></div>
+                <p class="mb-3 text-muted">No mango users yet.</p>
+                <a href="{% url 'mango:mangousers_create' %}" class="btn btn-primary">
+                    <i class="bi bi-person-plus-fill"></i> Add the first user
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if is_paginated %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    (function () {
+        var input = document.getElementById('userSearch');
+        if (!input) return;
+        var rows = Array.prototype.slice.call(document.querySelectorAll('#userTableBody tr'));
+        var noResults = document.getElementById('noResults');
+
+        input.addEventListener('input', function () {
+            var term = input.value.trim().toLowerCase();
+            var visibleCount = 0;
+            rows.forEach(function (row) {
+                var match = row.getAttribute('data-search').indexOf(term) !== -1;
+                row.classList.toggle('d-none', !match);
+                if (match) visibleCount++;
+            });
+            if (noResults) noResults.classList.toggle('d-none', visibleCount !== 0);
+        });
+    })();
+</script>
+{% endblock %}

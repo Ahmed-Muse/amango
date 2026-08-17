@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ mango_user.name }}{% endblock %}
+{% block page_title %}User Details{% endblock %}
+
+{% block extra_head %}
+<style>
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 1.1rem;
+        padding: 1.75rem;
+    }
+
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--blue-500), var(--green-500));
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.6rem;
+        flex-shrink: 0;
+        box-shadow: var(--shadow-md);
+    }
+
+    .profile-name {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: var(--ink-900);
+    }
+
+    .profile-sub {
+        color: var(--ink-500);
+        font-size: 0.85rem;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1px;
+        background: var(--border-subtle);
+        border-top: 1px solid var(--border-subtle);
+    }
+
+    .detail-cell {
+        background: var(--surface);
+        padding: 1.25rem 1.75rem;
+    }
+
+    .detail-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 700;
+        color: var(--ink-500);
+        margin-bottom: 0.4rem;
+    }
+
+    .detail-value {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--ink-900);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{% url 'mango:mangousers_list' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to list
+        </a>
+        <div class="d-flex gap-2">
+            <a href="{% url 'mango:mangousers_update' mango_user.pk %}" class="btn btn-primary btn-sm">
+                <i class="bi bi-pencil-square"></i> Edit
+            </a>
+            <a href="{% url 'mango:mangousers_delete' mango_user.pk %}" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash3"></i> Delete
+            </a>
+        </div>
+    </div>
+
+    <div class="surface-card">
+        <div class="profile-header">
+            <div class="profile-avatar">{{ mango_user.name|slice:":1"|upper }}</div>
+            <div>
+                <div class="profile-name">{{ mango_user.name }}</div>
+                <div class="profile-sub">User ID #{{ mango_user.pk }}</div>
+            </div>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-cell">
+                <div class="detail-label"><i class="bi bi-person-fill text-accent"></i>Name</div>
+                <div class="detail-value">{{ mango_user.name }}</div>
+            </div>
+            <div class="detail-cell">
+                <div class="detail-label"><i class="bi bi-briefcase-fill text-accent"></i>Title</div>
+                <div class="detail-value">{{ mango_user.title }}</div>
+            </div>
+            <div class="detail-cell">
+                <div class="detail-label"><i class="bi bi-calendar-heart text-accent"></i>Age</div>
+                <div class="detail-value">{{ mango_user.age|default:"—" }}</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
