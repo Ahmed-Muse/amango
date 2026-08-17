@@ -17,6 +17,12 @@
         display: flex;
         align-items: center;
         gap: 0.9rem;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
     }
 
     .stat-ico {
@@ -32,7 +38,6 @@
 
     .stat-ico.is-blue { background: var(--blue-100); color: var(--blue-600); }
     .stat-ico.is-green { background: var(--green-100); color: var(--green-700); }
-    .stat-ico.is-ink { background: var(--surface-muted); color: var(--ink-700); border: 1px solid var(--border-subtle); }
 
     .stat-value {
         font-family: var(--font-display);
@@ -82,7 +87,7 @@
         font-size: 0.68rem;
         letter-spacing: 0.07em;
         color: var(--ink-500);
-        font-weight: 700;
+        font-weight: 600;
         border-bottom: 1px solid var(--border-subtle);
         padding: 0.9rem 1rem;
         background: var(--surface-muted);
@@ -92,12 +97,19 @@
         padding: 0.85rem 1rem;
         border-bottom: 1px solid var(--border-subtle);
         vertical-align: middle;
+        box-shadow: inset 3px 0 0 transparent;
     }
+
+    .users-table td:first-child { transition: box-shadow 0.15s ease; }
 
     .users-table tbody tr:last-child td { border-bottom: none; }
 
     .users-table tbody tr {
         transition: background-color 0.12s ease;
+    }
+
+    .users-table tbody tr:hover td:first-child {
+        box-shadow: inset 3px 0 0 var(--green-500);
     }
 
     .users-table tbody tr:hover { background-color: var(--surface-muted); }
@@ -106,6 +118,8 @@
         display: flex;
         align-items: center;
         gap: 0.7rem;
+        text-decoration: none !important;
+        border-radius: var(--radius-sm);
     }
 
     .avatar-chip {
@@ -121,16 +135,18 @@
         font-size: 0.85rem;
         flex-shrink: 0;
         font-family: var(--font-display);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .user-name {
         font-weight: 600;
         color: var(--ink-900);
         font-size: 0.9rem;
-        text-decoration: none !important;
+        transition: color 0.15s ease;
     }
 
-    .user-name:hover { color: var(--blue-700) !important; }
+    .user-cell:hover .user-name { color: var(--blue-700); }
+    .user-cell:hover .avatar-chip { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(26, 86, 176, 0.28); }
 
     .user-id {
         font-size: 0.72rem;
@@ -160,6 +176,7 @@
         border: 1.5px solid var(--border-subtle);
         background: var(--surface);
         color: var(--ink-700);
+        text-decoration: none !important;
         transition: all 0.15s ease;
     }
 
@@ -213,7 +230,7 @@
             </div>
         </div>
         <div class="surface-card stat-card">
-            <div class="stat-ico is-ink"><i class="bi bi-calendar-heart"></i></div>
+            <div class="stat-ico is-blue"><i class="bi bi-calendar-heart"></i></div>
             <div>
                 <div class="stat-value">{% if average_age %}{{ average_age|floatformat:0 }}{% else %}—{% endif %}</div>
                 <div class="stat-label">Average age</div>

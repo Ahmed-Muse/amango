@@ -5,13 +5,30 @@
 
 {% block extra_head %}
 <style>
-    .form-card { max-width: 520px; padding: 2rem; }
+    .form-card { padding: 2rem 2.5rem 2.25rem; }
 
     .form-card-header {
         display: flex;
         align-items: center;
         gap: 0.85rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.75rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.5rem 1.75rem;
+        max-width: 900px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 1.75rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-subtle);
     }
 
     .form-card-ico {
@@ -28,8 +45,7 @@
     }
 
     .form-card-title {
-        font-family: var(--font-display);
-        font-weight: 700;
+        font-weight: 600;
         font-size: 1.15rem;
         color: var(--ink-900);
     }
@@ -59,17 +75,19 @@
         <form method="post" novalidate>
             {% csrf_token %}
 
-            {% for field in form %}
-                <div class="mb-3">
-                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="text-danger small mt-1">{{ field.errors|join:', ' }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+            <div class="form-grid">
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">{{ field.errors|join:', ' }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
 
-            <div class="d-flex gap-2 mt-4">
+            <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-check-lg"></i> Save
                 </button>

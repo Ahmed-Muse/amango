@@ -54,3 +54,4 @@ class MangoUsersDeleteView(DeleteView):
     def form_valid(self, form):
         messages.success(self.request, f'User "{self.object.name}" was deleted successfully.')
         return super().form_valid(form)
+###########
