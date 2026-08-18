@@ -76,27 +76,27 @@ WSGI_APPLICATION = 'amango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get('AMANGO_DB_ENGINE', 'mysql') == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('AMANGO_DB_NAME', 'amangodevdb'),
+            'USER': os.environ.get('AMANGO_DB_USER', 'root'),
+            'PASSWORD': os.environ.get('AMANGO_DB_PASSWORD', 'allif123'),
+            'HOST': os.environ.get('AMANGO_DB_HOST', 'localhost'),
+            'PORT': os.environ.get('AMANGO_DB_PORT', '3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+            },
+        }
     }
-}
-
-# MySQL (amangodevdb) - set up later, switch DATABASES above back to this.
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': os.environ.get('AMANGO_DB_NAME', 'amangodevdb'),
-#         'USER': os.environ.get('AMANGO_DB_USER', 'root'),
-#         'PASSWORD': os.environ.get('AMANGO_DB_PASSWORD', ''),
-#         'HOST': os.environ.get('AMANGO_DB_HOST', 'localhost'),
-#         'PORT': os.environ.get('AMANGO_DB_PORT', '3306'),
-#         'OPTIONS': {
-#             'charset': 'utf8mb4',
-#         },
-#     }
-# }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
