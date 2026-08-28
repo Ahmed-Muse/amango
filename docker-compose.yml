@@ -1,37 +1,29 @@
 services:
-  db:
-    image: mysql:8.4
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: amangodevdb
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-amango_dev_pw}
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-amango_dev_pw}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-  web:
+  amango:
     build: .
+    image: amango-app:v1
+    container_name: amango-container
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/app
+    env_file:
+      - .env
     ports:
       - "8000:8000"
-    environment:
-      AMANGO_DB_ENGINE: mysql
-      AMANGO_DB_NAME: amangodevdb
-      AMANGO_DB_USER: root
-      AMANGO_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-amango_dev_pw}
-      AMANGO_DB_HOST: db
-      AMANGO_DB_PORT: 3306
     depends_on:
       db:
         condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${AMANGO_DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   mysql_data:

@@ -19,16 +19,40 @@ from django.contrib.messages import constants as message_constants
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
+# Environment-driven settings
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
+#
+# Locally (nothing set): behaves exactly like before — DEBUG on, insecure
+# dev key, any host allowed. In production, set DJANGO_DEBUG=False,
+# DJANGO_SECRET_KEY=<a real secret>, and DJANGO_ALLOWED_HOSTS to switch modes.
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6w=q2=1tk2yxa(11t6fnz2=&8%2sh2h54%l3+n*ne--w7!uo-7'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+_DEV_SECRET_KEY = 'django-insecure-6w=q2=1tk2yxa(11t6fnz2=&8%2sh2h54%l3+n*ne--w7!uo-7'
+# `or`, not .get()'s default arg — an env var can be *present but empty*
+# (e.g. a blank line in .env), which .get()'s default wouldn't catch.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or _DEV_SECRET_KEY
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
+    if host.strip()
+]
+
+if not DEBUG:
+    # Fail loudly at startup rather than silently deploying with dev
+    # settings — a wrong/missing secret key or host list in production is
+    # a security bug, not something that should just quietly "still work".
+    if SECRET_KEY == _DEV_SECRET_KEY:
+        raise RuntimeError(
+            'DJANGO_DEBUG=False but DJANGO_SECRET_KEY was not set. '
+            'Refusing to run in production with the insecure dev key.'
+        )
+    if not ALLOWED_HOSTS:
+        raise RuntimeError(
+            'DJANGO_DEBUG=False but DJANGO_ALLOWED_HOSTS was not set. '
+            'Refusing to run in production with no allowed hosts.'
+        )
 
 
 # Application definition
@@ -45,6 +69,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -134,6 +159,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 
 # Default primary key field type

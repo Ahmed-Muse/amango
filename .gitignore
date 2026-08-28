@@ -9,6 +9,7 @@ db.sqlite3
 # Environment / secrets
 .env
 .env.*
+!.env.example
 
 # Editor / OS
 .vscode/
