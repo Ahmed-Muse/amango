@@ -101,18 +101,31 @@ WSGI_APPLICATION = 'amango.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-if os.environ.get('AMANGO_DB_ENGINE', 'mysql') == 'mysql':
+_DB_ENGINE = os.environ.get('AMANGO_DB_ENGINE', 'postgresql')
+
+if _DB_ENGINE == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': os.environ.get('AMANGO_DB_NAME', 'amangodevdb'),
             'USER': os.environ.get('AMANGO_DB_USER', 'root'),
-            'PASSWORD': os.environ.get('AMANGO_DB_PASSWORD', 'allif123'),
+            'PASSWORD': os.environ.get('AMANGO_DB_PASSWORD', 'ACW1#6030@smalmg'),
             'HOST': os.environ.get('AMANGO_DB_HOST', 'localhost'),
             'PORT': os.environ.get('AMANGO_DB_PORT', '3306'),
             'OPTIONS': {
                 'charset': 'utf8mb4',
             },
+        }
+    }
+elif _DB_ENGINE == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('AMANGO_DB_NAME', 'AMANGODB'),
+            'USER': os.environ.get('AMANGO_DB_USER', 'postgres'),
+            'PASSWORD': os.environ.get('AMANGO_DB_PASSWORD', 'ACW1#6030@smalmg'),
+            'HOST': os.environ.get('AMANGO_DB_HOST', 'localhost'),
+            'PORT': os.environ.get('AMANGO_DB_PORT', '5432'),
         }
     }
 else:

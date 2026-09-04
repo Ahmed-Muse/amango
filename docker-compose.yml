@@ -13,17 +13,18 @@ services:
         condition: service_healthy
 
   db:
-    image: mysql:8.4
+    image: postgres:17
     environment:
-      MYSQL_DATABASE: ${AMANGO_DB_NAME}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      POSTGRES_DB: ${AMANGO_DB_NAME}
+      POSTGRES_USER: ${AMANGO_DB_USER}
+      POSTGRES_PASSWORD: ${AMANGO_DB_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD-SHELL", "pg_isready -U ${AMANGO_DB_USER} -d ${AMANGO_DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  mysql_data:
+  postgres_data:

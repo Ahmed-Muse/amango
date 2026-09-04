@@ -1,57 +1,64 @@
 from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
+from django.core.paginator import Paginator
 from django.db.models import Avg
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import MangoUsersModelForm
 from .models import MangoUsersModel
 
 
-class MangoUsersListView(ListView):
-    model = MangoUsersModel
-    template_name = 'mango/mangousers_list.html'
-    context_object_name = 'mango_users'
-    paginate_by = 10
+def mango_users_list(request):
+    queryset = MangoUsersModel.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        queryset = self.get_queryset()
-        context['total_users'] = queryset.count()
-        context['distinct_titles'] = queryset.values('title').distinct().count()
-        context['average_age'] = queryset.aggregate(avg=Avg('age'))['avg']
-        return context
+    paginator = Paginator(queryset, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
 
-
-class MangoUsersDetailView(DetailView):
-    model = MangoUsersModel
-    template_name = 'mango/mangousers_detail.html'
-    context_object_name = 'mango_user'
+    context = {
+        'mango_users': page_obj,
+        'page_obj': page_obj,
+        'is_paginated': page_obj.has_other_pages(),
+        'total_users': queryset.count(),
+        'distinct_titles': queryset.values('title').distinct().count(),
+        'average_age': queryset.aggregate(avg=Avg('age'))['avg'],
+    }
+    return render(request, 'mango/mangousers_list.html', context)
 
 
-class MangoUsersCreateView(SuccessMessageMixin, CreateView):
-    model = MangoUsersModel
-    form_class = MangoUsersModelForm
-    template_name = 'mango/mangousers_form.html'
-    success_url = reverse_lazy('mango:mangousers_list')
-    success_message = 'User "%(name)s" was created successfully.'
+def mango_users_detail(request, pk):
+    mango_user = get_object_or_404(MangoUsersModel, pk=pk)
+    return render(request, 'mango/mangousers_detail.html', {'mango_user': mango_user})
 
 
-class MangoUsersUpdateView(SuccessMessageMixin, UpdateView):
-    model = MangoUsersModel
-    form_class = MangoUsersModelForm
-    template_name = 'mango/mangousers_form.html'
-    success_url = reverse_lazy('mango:mangousers_list')
-    success_message = 'User "%(name)s" was updated successfully.'
+def mango_users_create(request):
+    if request.method == 'POST':
+        form = MangoUsersModelForm(request.POST)
+        if form.is_valid():
+            mango_user = form.save()
+            messages.success(request, f'User "{mango_user.name}" was created successfully.')
+            return redirect('mango:mangousers_list')
+    else:
+        form = MangoUsersModelForm()
+    return render(request, 'mango/mangousers_form.html', {'form': form, 'object': None})
 
 
-class MangoUsersDeleteView(DeleteView):
-    model = MangoUsersModel
-    template_name = 'mango/mangousers_confirm_delete.html'
-    context_object_name = 'mango_user'
-    success_url = reverse_lazy('mango:mangousers_list')
+def mango_users_update(request, pk):
+    mango_user = get_object_or_404(MangoUsersModel, pk=pk)
+    if request.method == 'POST':
+        form = MangoUsersModelForm(request.POST, instance=mango_user)
+        if form.is_valid():
+            mango_user = form.save()
+            messages.success(request, f'User "{mango_user.name}" was updated successfully.')
+            return redirect('mango:mangousers_list')
+    else:
+        form = MangoUsersModelForm(instance=mango_user)
+    return render(request, 'mango/mangousers_form.html', {'form': form, 'object': mango_user})
 
-    def form_valid(self, form):
-        messages.success(self.request, f'User "{self.object.name}" was deleted successfully.')
-        return super().form_valid(form)
-###########
+
+def mango_users_delete(request, pk):
+    mango_user = get_object_or_404(MangoUsersModel, pk=pk)
+    if request.method == 'POST':
+        name = mango_user.name
+        mango_user.delete()
+        messages.success(request, f'User "{name}" was deleted successfully.')
+        return redirect('mango:mangousers_list')
+    return render(request, 'mango/mangousers_confirm_delete.html', {'mango_user': mango_user})
