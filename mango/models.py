@@ -1,5 +1,4 @@
 from django.db import models
-
 # models......
 class MangoUsersModel(models.Model):
     name = models.CharField(max_length=150)
